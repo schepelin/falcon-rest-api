@@ -40,3 +40,17 @@ class SQLiteStorage(object):
                 self.connection.execute(query, params)
         except sqlite3.IntegrityError as error:
             self.logger.error('Fail execute: %s', error)
+
+    def users_list(self, limit, offset=0):
+        limit = limit
+        cursor = self.connection.cursor()
+
+        users = []
+        try:
+            cursor.execute('SELECT Id, Name FROM Users ORDER BY Id ASC LIMIT ? OFFSET ?;', (limit, offset))
+        except sqlite3.IntegrityError as error:
+            self.logger.error('Fail execute: %s', error)
+        else:
+            data = cursor.fetchall()
+            users = [dict(id=item[0], name=item[1]) for item in data]
+        return users
